@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UtilityCraft Crafting & Resource Calculator</title>
+    <title>UtilityCraft Calculator & Recipe Guide</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -12,1052 +12,567 @@
             theme: {
                 extend: {
                     colors: {
-                        mc: {
-                            dark: '#0f172a',
-                            panel: '#1e293b',
-                            border: '#334155',
-                            emerald: '#10b981',
-                            redstone: '#ef4444',
-                            lapis: '#3b82f6',
-                            diamond: '#06b6d4',
-                            gold: '#f59e0b',
-                            purple: '#a855f7'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+                        darker: '#090d16',
+                        dark: '#111827',
+                        card: '#1f2937',
+                        accent: '#f59e0b',
+                        accentHover: '#d97706'
                     }
                 }
             }
         }
     </script>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        body {
-            background-color: #0b0f19;
-            color: #f1f5f9;
-            font-family: 'Inter', sans-serif;
-            background-image: 
-                radial-gradient(at 20% 20%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
-                radial-gradient(at 80% 0%, rgba(6, 182, 212, 0.05) 0px, transparent 50%),
-                radial-gradient(at 50% 80%, rgba(168, 85, 247, 0.04) 0px, transparent 50%);
-            background-attachment: fixed;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
-
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .glass-card {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .glass-card:hover {
-            border-color: rgba(6, 182, 212, 0.4);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(6, 182, 212, 0.15);
-        }
-
-        .crafting-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
-            background: #0f172a;
-            padding: 10px;
-            border-radius: 12px;
-            border: 2px solid #334155;
-            width: 210px;
-            height: 210px;
-        }
-
-        .crafting-slot {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            transition: all 0.15s ease;
-        }
-
-        .crafting-slot:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(6, 182, 212, 0.5);
-        }
-
-        /* Tree hierarchy lines */
-        .tree-line-left {
-            position: relative;
-        }
-        .tree-line-left::before {
-            content: '';
-            position: absolute;
-            left: -16px;
-            top: 0;
-            bottom: 50%;
-            width: 2px;
-            background-color: #334155;
-        }
-        .tree-line-left::after {
-            content: '';
-            position: absolute;
-            left: -16px;
-            top: 50%;
-            width: 12px;
-            height: 2px;
-            background-color: #334155;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #090d16; }
+        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #374151; }
+        button.cat-btn.active {
+            background: #f59e0b;
+            color: #090d16;
+            font-weight: 600;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-cyan-500 selection:text-white">
+<body class="bg-darker text-slate-100 min-h-screen flex flex-col font-sans selection:bg-amber-500 selection:text-darker">
 
-    <header class="sticky top-0 z-40 glass-panel border-b border-slate-800/80 px-4 lg:px-8 py-3.5 shadow-xl">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <!-- Brand / Logo -->
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-dark/80 backdrop-blur sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-cyan-500/20 ring-1 ring-white/20">
-                    <i class="fa-solid fa-cubes text-white text-xl"></i>
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center font-bold text-xl shadow-lg shadow-amber-500/20">
+                    🛠️
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg leading-tight tracking-wide text-white flex items-center gap-2">
-                        UtilityCraft <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">v2.4</span>
-                    </h1>
-                    <p class="text-xs text-slate-400">Minecraft Crafting & Resource Tree Calculator</p>
+                    <h1 class="text-xl font-bold tracking-tight text-white">UtilityCraft Calculator</h1>
+                    <p class="text-xs text-slate-400">Pebbles, Sieves, Steel, & Dorios Energy (DE) Automation Planner</p>
                 </div>
             </div>
-
-            <!-- Global Actions & Search Bar -->
             <div class="flex items-center gap-3 w-full md:w-auto">
                 <div class="relative flex-1 md:w-72">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                    <input type="text" id="searchInput" placeholder="Search items, recipes, materials..." 
-                           class="w-full bg-slate-900/80 border border-slate-700/70 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all">
-                    <button id="clearSearchBtn" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
-                        <i class="fa-solid fa-xmark text-sm"></i>
-                    </button>
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">🔍</span>
+                    <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="Search items or machines..." class="w-full pl-10 pr-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm focus:outline-none focus:border-amber-500 transition">
                 </div>
-                <button id="resetCalcBtn" title="Reset Calculator" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium border border-slate-700/60 transition-colors flex items-center gap-2">
-                    <i class="fa-solid fa-rotate-left text-xs"></i>
-                    <span class="hidden sm:inline">Reset</span>
-                </button>
             </div>
         </div>
     </header>
 
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Main App Layout -->
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
         
-        <!-- LEFT COLUMN: Item Catalog & Search Filter (5 cols) -->
-        <section class="lg:col-span-5 flex flex-col gap-4">
-            <div class="glass-panel rounded-2xl p-4 sm:p-5 flex flex-col gap-4 shadow-lg">
-                <!-- Category Filter Pills -->
-                <div>
-                    <div class="flex items-center justify-between mb-3">
-                        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                            <i class="fa-solid fa-layer-group text-cyan-400"></i> Categories
-                        </h2>
-                        <span id="itemCountBadge" class="text-xs text-slate-400">Showing 0 items</span>
-                    </div>
-                    <div id="categoryContainer" class="flex flex-wrap gap-1.5">
-                        <!-- Category pills rendered dynamically -->
-                    </div>
+        <!-- Left Panel: Item Catalog -->
+        <section class="lg:col-span-7 flex flex-col gap-6">
+            <div>
+                <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">UtilityCraft Progression Catalog</h2>
+                <div class="flex flex-wrap gap-2" id="categoryButtons">
+                    <button onclick="filterCategory('all')" class="cat-btn active px-3.5 py-1.5 bg-slate-800 text-slate-200 rounded-lg text-xs font-medium hover:bg-slate-700 transition">All Items</button>
+                    <button onclick="filterCategory('basics')" class="cat-btn px-3.5 py-1.5 bg-slate-800 text-slate-200 rounded-lg text-xs font-medium hover:bg-slate-700 transition">Basics & Gathering</button>
+                    <button onclick="filterCategory('tools')" class="cat-btn px-3.5 py-1.5 bg-slate-800 text-slate-200 rounded-lg text-xs font-medium hover:bg-slate-700 transition">Tools & Paxels</button>
+                    <button onclick="filterCategory('components')" class="cat-btn px-3.5 py-1.5 bg-slate-800 text-slate-200 rounded-lg text-xs font-medium hover:bg-slate-700 transition">Steel & Components</button>
+                    <button onclick="filterCategory('machines')" class="cat-btn px-3.5 py-1.5 bg-slate-800 text-slate-200 rounded-lg text-xs font-medium hover:bg-slate-700 transition">Machines & Power</button>
                 </div>
+            </div>
 
-                <!-- Item Cards Grid -->
-                <div class="border-t border-slate-800/80 pt-4">
-                    <div id="itemGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[calc(100vh-280px)] overflow-y-auto pr-1">
-                        <!-- Items rendered dynamically -->
-                    </div>
-                </div>
+            <!-- Item Cards Container -->
+            <div id="itemGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <!-- Dynamically populated by JS -->
             </div>
         </section>
 
-        <!-- RIGHT COLUMN: Calculator Dashboard & Recipe Breakdown (7 cols) -->
-        <section class="lg:col-span-7 flex flex-col gap-6">
+        <!-- Right Panel: Calculator & Raw Materials Shopping List -->
+        <section class="lg:col-span-5 flex flex-col gap-6">
             
-            <!-- Selected Item Header & Quantity Input -->
-            <div id="calcHeaderCard" class="glass-panel rounded-2xl p-5 border-l-4 border-l-cyan-500 shadow-xl transition-all">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div class="flex items-center gap-4">
-                        <div id="targetIconBg" class="w-14 h-14 rounded-2xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-center text-3xl shadow-inner shrink-0">
-                            <i id="targetIcon" class="fa-solid fa-cube text-slate-500"></i>
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <h2 id="targetName" class="text-xl font-bold text-white">Select an Item</h2>
-                                <span id="targetTierBadge" class="hidden text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700">Tier 1</span>
-                            </div>
-                            <p id="targetCategory" class="text-xs text-slate-400 mt-0.5">Click any item from the left catalog to start calculating resources.</p>
-                        </div>
-                    </div>
-
-                    <!-- Quantity Adjuster -->
-                    <div id="quantityWrapper" class="opacity-50 pointer-events-none flex items-center gap-2 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800 self-start sm:self-auto">
-                        <button id="qtyDecBtn" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-base flex items-center justify-center transition-colors">
-                            <i class="fa-solid fa-minus text-xs"></i>
-                        </button>
-                        <input type="number" id="targetQtyInput" value="1" min="1" max="9999" class="w-16 text-center bg-transparent text-white font-mono font-bold text-sm focus:outline-none">
-                        <button id="qtyIncBtn" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-base flex items-center justify-center transition-colors">
-                            <i class="fa-solid fa-plus text-xs"></i>
-                        </button>
-                        <div class="h-5 w-px bg-slate-800 mx-1"></div>
-                        <div class="flex gap-1">
-                            <button id="qty64Btn" class="px-2 py-1 text-xs rounded bg-slate-800 hover:bg-cyan-900/50 hover:text-cyan-300 text-slate-400 font-mono font-semibold transition-colors">x64</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Navigation Tabs for Calculator View Mode -->
-            <div id="calcViewTabs" class="flex border-b border-slate-800 gap-2">
-                <button data-tab="summary" class="tab-btn py-2.5 px-4 font-medium text-sm text-cyan-400 border-b-2 border-cyan-400 flex items-center gap-2 transition-colors">
-                    <i class="fa-solid fa-list-check"></i> Raw Shopping List
-                </button>
-                <button data-tab="tree" class="tab-btn py-2.5 px-4 font-medium text-sm text-slate-400 hover:text-slate-200 flex items-center gap-2 transition-colors">
-                    <i class="fa-solid fa-sitemap"></i> Crafting Hierarchy Tree
-                </button>
-                <button data-tab="stations" class="tab-btn py-2.5 px-4 font-medium text-sm text-slate-400 hover:text-slate-200 flex items-center gap-2 transition-colors">
-                    <i class="fa-solid fa-gears"></i> Required Stations
-                </button>
-            </div>
-
-            <!-- TAB CONTENT 1: Raw Materials Shopping Checklist -->
-            <div id="tabContentSummary" class="glass-panel rounded-2xl p-5 shadow-lg flex flex-col gap-4">
-                <div class="flex items-center justify-between">
+            <!-- Active Selection Box -->
+            <div class="bg-dark border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="flex justify-between items-start mb-4">
                     <div>
-                        <h3 class="font-bold text-base text-slate-200 flex items-center gap-2">
-                            Raw Base Components
-                        </h3>
-                        <p class="text-xs text-slate-400">Total uncrafted raw resources needed from scratch</p>
+                        <span class="text-xs font-semibold text-amber-500 uppercase tracking-widest">Selected Target</span>
+                        <h3 id="selectedItemName" class="text-lg font-bold text-white mt-0.5">Select an item</h3>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button id="copyListBtn" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700/80 flex items-center gap-1.5 transition-colors">
-                            <i class="fa-solid fa-copy"></i> Copy Text
-                        </button>
-                        <button id="clearChecklistBtn" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700/80 flex items-center gap-1.5 transition-colors">
-                            <i class="fa-solid fa-check-double"></i> Uncheck All
-                        </button>
+                        <label for="targetQty" class="text-xs text-slate-400">Qty:</label>
+                        <input type="number" id="targetQty" value="1" min="1" max="999" onchange="updateQuantity(this.value)" class="w-16 px-2 py-1 bg-slate-900 border border-slate-800 rounded-lg text-center text-sm font-semibold focus:outline-none focus:border-amber-500">
+                        <button onclick="multiplyQty(64)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg text-amber-400 transition" title="Set to 1 Stack">x64</button>
                     </div>
                 </div>
 
-                <!-- Raw Materials List Container -->
-                <div id="rawMaterialsList" class="space-y-2 mt-2 min-h-[160px]">
-                    <div class="text-center py-10 text-slate-500 italic text-sm">
-                        Select an item from the left catalog to generate crafting materials list.
-                    </div>
+                <div id="selectedItemMeta" class="flex flex-wrap gap-2 text-xs text-slate-300 mb-4 empty:hidden">
+                    <!-- Station & Energy info inserted here -->
+                </div>
+
+                <div class="flex gap-2">
+                    <button onclick="openRecipeModal()" id="viewRecipeBtn" disabled class="flex-1 py-2.5 px-4 bg-slate-800 text-slate-500 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition cursor-not-allowed">
+                        <span>🧩</span> View 3x3 Crafting Grid
+                    </button>
                 </div>
             </div>
 
-            <!-- TAB CONTENT 2: Step-by-Step Crafting Hierarchy Tree -->
-            <div id="tabContentTree" class="hidden glass-panel rounded-2xl p-5 shadow-lg flex flex-col gap-4">
-                <div>
-                    <h3 class="font-bold text-base text-slate-200">Interactive Recipe Tree</h3>
-                    <p class="text-xs text-slate-400">Detailed breakdown showing full step-by-step assembly</p>
+            <!-- Raw Materials Shopping List -->
+            <div class="bg-dark border border-slate-800 rounded-2xl p-5 shadow-xl flex-1 flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-white text-sm uppercase tracking-wider flex items-center gap-2">
+                        <span>🛒</span> Raw Materials Needed
+                    </h3>
+                    <button onclick="copyShoppingList()" class="text-xs text-amber-400 hover:text-amber-300 transition flex items-center gap-1 font-medium">
+                        📋 Copy List
+                    </button>
                 </div>
-                <div id="treeContainer" class="p-2 space-y-3 min-h-[160px] overflow-x-auto">
-                    <div class="text-center py-10 text-slate-500 italic text-sm">
-                        Select an item to view recipe breakdown.
-                    </div>
-                </div>
-            </div>
 
-            <!-- TAB CONTENT 3: Required Machines & Stations -->
-            <div id="tabContentStations" class="hidden glass-panel rounded-2xl p-5 shadow-lg flex flex-col gap-4">
-                <div>
-                    <h3 class="font-bold text-base text-slate-200">Workstations & Machines Needed</h3>
-                    <p class="text-xs text-slate-400">Equipment required to manufacture all components</p>
-                </div>
-                <div id="stationsList" class="grid grid-cols-1 sm:grid-cols-2 gap-3 min-h-[160px]">
-                    <div class="col-span-full text-center py-10 text-slate-500 italic text-sm">
-                        Select an item to see workstation requirements.
-                    </div>
+                <div id="shoppingListContainer" class="flex-1 overflow-y-auto max-h-72 space-y-2 pr-1">
+                    <p class="text-slate-500 text-sm text-center py-8">Select an item above to generate its raw resource requirement list.</p>
                 </div>
             </div>
 
         </section>
     </main>
 
-    <div id="recipeModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
-        <div class="glass-panel w-full max-w-lg rounded-2xl border border-slate-700/80 shadow-2xl overflow-hidden transform scale-95 transition-transform duration-200" id="modalContent">
-            <!-- Modal Header -->
-            <div class="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
-                <div class="flex items-center gap-3">
-                    <div id="modalItemIcon" class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-xl text-cyan-400">
-                        <i class="fa-solid fa-cube"></i>
-                    </div>
-                    <div>
-                        <h3 id="modalItemTitle" class="font-bold text-white text-base">Item Name</h3>
-                        <p id="modalItemCategory" class="text-xs text-slate-400">Category / Tier</p>
-                    </div>
-                </div>
-                <button id="closeModalBtn" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-colors">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+    <!-- 3x3 Crafting Grid Modal -->
+    <div id="recipeModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-dark border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-150">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modalTitle" class="text-base font-bold text-white">Crafting Recipe</h3>
+                <button onclick="closeRecipeModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition">✕</button>
             </div>
-
-            <!-- Modal Body -->
-            <div class="p-5 space-y-5 max-h-[80vh] overflow-y-auto">
-                <!-- Description & Power Info -->
-                <p id="modalItemDesc" class="text-sm text-slate-300 leading-relaxed bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-                    Item description goes here...
-                </p>
-
-                <!-- Energy / Specs -->
-                <div id="modalPowerContainer" class="hidden grid-cols-2 gap-3">
-                    <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800/80 flex items-center gap-3">
-                        <i class="fa-solid fa-bolt text-amber-400 text-lg"></i>
-                        <div>
-                            <span class="text-[10px] text-slate-400 uppercase font-semibold block">Energy Cost</span>
-                            <span id="modalPowerCost" class="text-xs font-mono font-bold text-amber-300">50,000 FE</span>
-                        </div>
-                    </div>
-                    <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800/80 flex items-center gap-3">
-                        <i class="fa-solid fa-gears text-cyan-400 text-lg"></i>
-                        <div>
-                            <span class="text-[10px] text-slate-400 uppercase font-semibold block">Station</span>
-                            <span id="modalStation" class="text-xs font-semibold text-slate-200">Utility Worktable</span>
-                        </div>
-                    </div>
+            
+            <div class="flex flex-col items-center gap-4 mb-6">
+                <!-- 3x3 Grid Matrix -->
+                <div id="craftingGridUI" class="grid grid-cols-3 gap-2 p-3 bg-slate-950 rounded-xl border border-slate-800">
+                    <!-- 9 slots populated by JavaScript -->
                 </div>
-
-                <!-- Recipe Display (3x3 Crafting Grid or Machine Input/Output) -->
-                <div>
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-table-cells text-cyan-400"></i> Recipe Layout
-                    </h4>
-                    
-                    <div id="gridDisplayWrapper" class="flex flex-col sm:flex-row items-center justify-center gap-6 bg-slate-950/60 p-4 rounded-xl border border-slate-800/90">
-                        <!-- 3x3 Grid -->
-                        <div class="crafting-grid" id="modalCraftingGrid">
-                            <!-- 9 slots generated dynamically -->
-                        </div>
-
-                        <!-- Arrow Indicator -->
-                        <div class="flex flex-col items-center text-slate-500">
-                            <i class="fa-solid fa-arrow-right text-2xl hidden sm:block"></i>
-                            <i class="fa-solid fa-arrow-down text-2xl sm:hidden"></i>
-                            <span id="modalYieldQty" class="text-xs font-mono mt-1 font-bold text-cyan-400">x1</span>
-                        </div>
-
-                        <!-- Output Slot -->
-                        <div class="flex flex-col items-center gap-2">
-                            <div class="w-16 h-16 rounded-xl bg-slate-900 border-2 border-cyan-500/60 flex items-center justify-center text-2xl text-cyan-400 shadow-lg shadow-cyan-500/10">
-                                <i id="modalOutputIcon" class="fa-solid fa-cube"></i>
-                            </div>
-                            <span class="text-[11px] text-slate-400 font-medium">Output</span>
-                        </div>
-                    </div>
+                <div id="modalStationInfo" class="text-xs text-slate-300 bg-slate-900 px-3.5 py-2 rounded-lg border border-slate-800 text-center font-medium">
+                    Station: Crafting Table
                 </div>
             </div>
 
-            <!-- Modal Footer -->
-            <div class="p-4 border-t border-slate-800 bg-slate-900/50 flex justify-end">
-                <button id="modalSelectBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-white font-semibold text-sm shadow-md transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-calculator"></i> Calculate This Item
-                </button>
-            </div>
+            <button onclick="closeRecipeModal()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-medium transition">Close Preview</button>
         </div>
     </div>
 
-    <!-- Notification Toast -->
-    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-10 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-3 bg-slate-900 border border-slate-700 text-slate-200 px-4 py-3 rounded-xl shadow-2xl">
-        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
-        <span id="toastMsg" class="text-sm font-medium">Copied to clipboard!</span>
-    </div>
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+        UtilityCraft Calculator • Built for automated survival factory planning.
+    </footer>
 
+    <!-- Application Script -->
     <script>
-        // Database of UtilityCraft Items & Recipes
+        // UtilityCraft Item & Recipe Database
         const ITEMS_DB = {
-            // BASE RAW MATERIALS
-            'iron_ingot': { name: 'Iron Ingot', category: 'Base Materials', tier: 1, icon: 'fa-cubes', color: 'text-slate-300', isRaw: true, desc: 'Standard Minecraft Iron Ingot.' },
-            'copper_ingot': { name: 'Copper Ingot', category: 'Base Materials', tier: 1, icon: 'fa-cubes', color: 'text-orange-400', isRaw: true, desc: 'Raw copper ingot obtained from smelting copper ore.' },
-            'redstone': { name: 'Redstone Dust', category: 'Base Materials', tier: 1, icon: 'fa-dust', color: 'text-red-500', isRaw: true, desc: 'Conductive redstone powder.' },
-            'gold_ingot': { name: 'Gold Ingot', category: 'Base Materials', tier: 1, icon: 'fa-cubes', color: 'text-amber-400', isRaw: true, desc: 'Standard Minecraft Gold Ingot.' },
-            'diamond': { name: 'Diamond', category: 'Base Materials', tier: 1, icon: 'fa-gem', color: 'text-cyan-400', isRaw: true, desc: 'Precious diamond crystal.' },
-            'obsidian': { name: 'Obsidian', category: 'Base Materials', tier: 1, icon: 'fa-cube', color: 'text-purple-400', isRaw: true, desc: 'Blast-resistant obsidian block.' },
-            'quartz': { name: 'Nether Quartz', category: 'Base Materials', tier: 1, icon: 'fa-gem', color: 'text-slate-100', isRaw: true, desc: 'Crystalline nether quartz.' },
-            'coal': { name: 'Coal', category: 'Base Materials', tier: 1, icon: 'fa-fire', color: 'text-slate-400', isRaw: true, desc: 'Combustible fuel source.' },
-
-            // REFINED COMPONENTS
-            'copper_wire': {
-                name: 'Copper Wire', category: 'Components', tier: 1, icon: 'fa-bolt-lightning', color: 'text-orange-400', yields: 4,
-                station: 'Utility Worktable',
-                recipe: { 'copper_ingot': 1 },
-                grid: ['copper_ingot', null, null, null, null, null, null, null, null],
-                desc: 'Basic electrical wiring used in intermediate recipes.'
+            // Basics & Early Game
+            "pebble": {
+                name: "Pebbles (4x)",
+                category: "basics",
+                station: "Sneak + Right-Click Dirt/Grass",
+                energy: 0,
+                grid: [
+                    [null, null, null],
+                    [null, "Dirt/Grass", null],
+                    [null, null, null]
+                ],
+                ingredients: {}
             },
-            'reinforced_iron': {
-                name: 'Reinforced Iron Ingot', category: 'Components', tier: 1, icon: 'fa-shield-halved', color: 'text-slate-200', yields: 1,
-                station: 'Alloy Smelter', powerCost: '2,500 FE',
-                recipe: { 'iron_ingot': 2, 'coal': 1 },
-                grid: ['iron_ingot', 'iron_ingot', null, 'coal', null, null, null, null, null],
-                desc: 'Hardened iron alloy infused with carbon.'
+            "cobblestone": {
+                name: "Cobblestone",
+                category: "basics",
+                station: "Crafting Table",
+                energy: 0,
+                grid: [
+                    ["Pebble", "Pebble", null],
+                    ["Pebble", "Pebble", null],
+                    [null, null, null]
+                ],
+                ingredients: {
+                    "Pebble": 4
+                }
             },
-            'capacitor_core': {
-                name: 'Capacitor Core', category: 'Components', tier: 1, icon: 'fa-car-battery', color: 'text-emerald-400', yields: 1,
-                station: 'Utility Worktable',
-                recipe: { 'copper_wire': 4, 'redstone': 2, 'iron_ingot': 2 },
-                grid: ['copper_wire', 'redstone', 'copper_wire', 'iron_ingot', 'copper_wire', 'iron_ingot', 'copper_wire', 'redstone', 'copper_wire'],
-                desc: 'Energy retention unit for electrical devices.'
+            "plant_fiber": {
+                name: "Plant Fiber",
+                category: "basics",
+                station: "Flint Knife on Leaves",
+                energy: 0,
+                grid: [
+                    [null, null, null],
+                    [null, "Leaves", null],
+                    [null, null, null]
+                ],
+                ingredients: {}
             },
-            'arcane_dust': {
-                name: 'Arcane Dust', category: 'Components', tier: 1, icon: 'fa-wand-magic-sparkles', color: 'text-purple-400', yields: 2,
-                station: 'Ore Pulverizer', powerCost: '1,000 FE',
-                recipe: { 'redstone': 2, 'quartz': 1 },
-                grid: ['redstone', 'quartz', 'redstone', null, null, null, null, null, null],
-                desc: 'Mystical dust extracted from pulverized quartz & redstone.'
-            },
-            'silicon_wafer': {
-                name: 'Silicon Wafer', category: 'Components', tier: 2, icon: 'fa-microchip', color: 'text-blue-300', yields: 2,
-                station: 'Alloy Smelter', powerCost: '5,000 FE',
-                recipe: { 'quartz': 2, 'coal': 1 },
-                grid: ['quartz', 'coal', 'quartz', null, null, null, null, null, null],
-                desc: 'Processed silicon core for micro-circuitry.'
-            },
-            'compressed_steel': {
-                name: 'Compressed Steel Plate', category: 'Components', tier: 2, icon: 'fa-sheet-plastic', color: 'text-slate-300', yields: 1,
-                station: 'Utility Worktable',
-                recipe: { 'reinforced_iron': 3, 'obsidian': 1 },
-                grid: ['reinforced_iron', 'reinforced_iron', 'reinforced_iron', 'obsidian', null, null, null, null, null],
-                desc: 'Heavy industrial plate built to withstand massive pressure.'
-            },
-
-            // MACHINES & WORKSTATIONS
-            'utility_worktable': {
-                name: 'Utility Worktable', category: 'Machines', tier: 1, icon: 'fa-hammer', color: 'text-amber-500', yields: 1,
-                station: 'Crafting Table',
-                recipe: { 'iron_ingot': 4, 'copper_ingot': 2 },
-                grid: ['iron_ingot', 'copper_ingot', 'iron_ingot', 'iron_ingot', 'copper_ingot', 'iron_ingot', null, null, null],
-                desc: 'The baseline crafting station required for UtilityCraft items.'
-            },
-            'basic_generator': {
-                name: 'Basic Coal Generator', category: 'Energy & Power', tier: 1, icon: 'fa-charging-station', color: 'text-red-400', yields: 1,
-                station: 'Utility Worktable',
-                recipe: { 'reinforced_iron': 4, 'capacitor_core': 1, 'copper_wire': 4 },
-                grid: ['reinforced_iron', 'copper_wire', 'reinforced_iron', 'copper_wire', 'capacitor_core', 'copper_wire', 'reinforced_iron', 'copper_wire', 'reinforced_iron'],
-                desc: 'Generates 40 FE/t by burning solid fuel like coal.'
-            },
-            'ore_pulverizer': {
-                name: 'Ore Pulverizer', category: 'Machines', tier: 1, icon: 'fa-gears', color: 'text-cyan-400', yields: 1,
-                station: 'Utility Worktable',
-                recipe: { 'reinforced_iron': 4, 'diamond': 2, 'capacitor_core': 1, 'copper_wire': 2 },
-                grid: ['reinforced_iron', 'diamond', 'reinforced_iron', 'copper_wire', 'capacitor_core', 'copper_wire', 'reinforced_iron', 'diamond', 'reinforced_iron'],
-                desc: 'Grinds ores to double yield and creates arcane dusts.'
-            },
-            'alloy_smelter': {
-                name: 'Alloy Smelter', category: 'Machines', tier: 2, icon: 'fa-fire-burner', color: 'text-amber-400', yields: 1,
-                station: 'Utility Worktable',
-                recipe: { 'compressed_steel': 4, 'capacitor_core': 2, 'gold_ingot': 2 },
-                grid: ['compressed_steel', 'gold_ingot', 'compressed_steel', 'capacitor_core', 'compressed_steel', 'capacitor_core', 'compressed_steel', 'gold_ingot', 'compressed_steel'],
-                desc: 'High-temperature furnace that fuses metals into advanced alloys.'
-            },
-            'fluid_pipe': {
-                name: 'Fluid Logistics Pipe', category: 'Logistics', tier: 1, icon: 'fa-pipe', color: 'text-cyan-300', yields: 8,
-                station: 'Utility Worktable',
-                recipe: { 'copper_ingot': 4, 'iron_ingot': 2 },
-                grid: ['copper_ingot', 'iron_ingot', 'copper_ingot', 'copper_ingot', 'iron_ingot', 'copper_ingot', null, null, null],
-                desc: 'Transfers fluids & liquids automatically between machines.'
-            },
-            'battery_cell': {
-                name: 'Energy Storage Cell', category: 'Energy & Power', tier: 2, icon: 'fa-battery-full', color: 'text-emerald-400', yields: 1,
-                station: 'Utility Worktable',
-                recipe: { 'compressed_steel': 4, 'capacitor_core': 4, 'gold_ingot': 1 },
-                grid: ['compressed_steel', 'capacitor_core', 'compressed_steel', 'capacitor_core', 'gold_ingot', 'capacitor_core', 'compressed_steel', 'capacitor_core', 'compressed_steel'],
-                desc: 'Stores up to 1,000,000 FE energy.'
+            "string": {
+                name: "String",
+                category: "basics",
+                station: "Crafting Table",
+                energy: 0,
+                grid: [
+                    ["Plant Fiber", "Plant Fiber", null],
+                    ["Plant Fiber", "Plant Fiber", null],
+                    [null, null, null]
+                ],
+                ingredients: {
+                    "Plant Fiber": 4
+                }
             },
 
-            // INTERMEDIATE & ADVANCED TIER
-            'advanced_capacitor': {
-                name: 'Advanced Capacitor Unit', category: 'Components', tier: 2, icon: 'fa-microchip', color: 'text-cyan-400', yields: 1,
-                station: 'Energy Infuser', powerCost: '10,000 FE',
-                recipe: { 'capacitor_core': 2, 'silicon_wafer': 2, 'gold_ingot': 2 },
-                grid: ['capacitor_core', 'silicon_wafer', 'gold_ingot', 'silicon_wafer', 'capacitor_core', 'gold_ingot', null, null, null],
-                desc: 'High-density power unit required for Tier 3 machinery.'
+            // Tools
+            "flint_knife": {
+                name: "Flint Knife",
+                category: "tools",
+                station: "Crafting Table",
+                energy: 0,
+                grid: [
+                    [null, null, "Flint"],
+                    [null, "Stick", null],
+                    [null, null, null]
+                ],
+                ingredients: {
+                    "Flint": 1,
+                    "Stick": 1
+                }
             },
-            'auto_crafter': {
-                name: 'Auto-Crafter Module', category: 'Machines', tier: 2, icon: 'fa-robot', color: 'text-indigo-400', yields: 1,
-                station: 'Utility Worktable',
-                recipe: { 'compressed_steel': 4, 'silicon_wafer': 2, 'utility_worktable': 1, 'advanced_capacitor': 1 },
-                grid: ['compressed_steel', 'silicon_wafer', 'compressed_steel', 'silicon_wafer', 'utility_worktable', 'advanced_capacitor', 'compressed_steel', 'silicon_wafer', 'compressed_steel'],
-                desc: 'Automates any 3x3 crafting recipe using FE power.'
+            "wooden_hammer": {
+                name: "Wooden Hammer",
+                category: "tools",
+                station: "Crafting Table",
+                energy: 0,
+                grid: [
+                    ["Oak Plank", "Oak Plank", "Oak Plank"],
+                    [null, "Stick", null],
+                    [null, "Stick", null]
+                ],
+                ingredients: {
+                    "Oak Plank": 3,
+                    "Stick": 2
+                }
             },
-            'chunk_loader': {
-                name: 'Dimensional Chunk Loader', category: 'Magic & Utilities', tier: 2, icon: 'fa-anchor', color: 'text-purple-400', yields: 1,
-                station: 'Utility Worktable',
-                recipe: { 'obsidian': 4, 'arcane_dust': 4, 'diamond': 1 },
-                grid: ['obsidian', 'arcane_dust', 'obsidian', 'arcane_dust', 'diamond', 'arcane_dust', 'obsidian', 'arcane_dust', 'obsidian'],
-                desc: 'Keeps surrounding chunks loaded in memory even when offline.'
+            "wooden_paxel": {
+                name: "Wooden Paxel",
+                category: "tools",
+                station: "Crafting Table",
+                energy: 0,
+                grid: [
+                    ["Wooden Axe", "Wooden Pickaxe", "Wooden Shovel"],
+                    [null, "Stick", null],
+                    [null, "Stick", null]
+                ],
+                ingredients: {
+                    "Wooden Axe": 1,
+                    "Wooden Pickaxe": 1,
+                    "Wooden Shovel": 1,
+                    "Stick": 2
+                }
             },
 
-            // END-GAME ADVANCED TIER
-            'antimatter_core': {
-                name: 'Antimatter Core', category: 'Components', tier: 3, icon: 'fa-atom', color: 'text-pink-500', yields: 1,
-                station: 'Alloy Smelter', powerCost: '100,000 FE',
-                recipe: { 'advanced_capacitor': 2, 'compressed_steel': 4, 'arcane_dust': 4 },
-                grid: ['arcane_dust', 'compressed_steel', 'arcane_dust', 'compressed_steel', 'advanced_capacitor', 'compressed_steel', 'arcane_dust', 'compressed_steel', 'arcane_dust'],
-                desc: 'Volatile containment cell holding dense antimatter.'
+            // Steel & Components
+            "sieve": {
+                name: "Sieve",
+                category: "components",
+                station: "Crafting Table",
+                energy: 0,
+                grid: [
+                    ["Oak Plank", "String", "Oak Plank"],
+                    ["Oak Plank", null, "Oak Plank"],
+                    ["Oak Plank", "Oak Plank", "Oak Plank"]
+                ],
+                ingredients: {
+                    "Oak Plank": 7,
+                    "String": 1
+                }
             },
-            'void_miner': {
-                name: 'Void Ore Miner Tier I', category: 'Machines', tier: 3, icon: 'fa-bore-hole', color: 'text-amber-500', yields: 1,
-                station: 'Utility Worktable',
-                recipe: { 'antimatter_core': 1, 'compressed_steel': 6, 'diamond': 2 },
-                grid: ['compressed_steel', 'diamond', 'compressed_steel', 'compressed_steel', 'antimatter_core', 'compressed_steel', 'compressed_steel', 'diamond', 'compressed_steel'],
-                desc: 'Extracts raw ores out of the void using immense power.'
+            "smeltflare": {
+                name: "SmeltFlare",
+                category: "components",
+                station: "World Loot / Specialized Furnace",
+                energy: 0,
+                grid: [
+                    [null, null, null],
+                    [null, "Raw Flare Powder", null],
+                    [null, null, null]
+                ],
+                ingredients: {}
             },
-            'teleportation_pad': {
-                name: 'Quantum Teleporter', category: 'Magic & Utilities', tier: 3, icon: 'fa-door-open', color: 'text-cyan-300', yields: 2,
-                station: 'Utility Worktable',
-                recipe: { 'antimatter_core': 1, 'chunk_loader': 1, 'compressed_steel': 4 },
-                grid: ['compressed_steel', 'chunk_loader', 'compressed_steel', 'compressed_steel', 'antimatter_core', 'compressed_steel', null, null, null],
-                desc: 'Instant point-to-point player teleporter pad.'
+            "brute_steel": {
+                name: "Brute Steel",
+                category: "components",
+                station: "SmeltFlare Furnace",
+                energy: 0,
+                grid: [
+                    [null, "Raw Iron", null],
+                    ["Coal", "SmeltFlare", null],
+                    [null, null, null]
+                ],
+                ingredients: {
+                    "Raw Iron": 1,
+                    "Coal": 1,
+                    "SmeltFlare": 1
+                }
             },
-            'infinity_drill': {
-                name: 'Infinity Mining Drill', category: 'Tools', tier: 3, icon: 'fa-screwdriver-wrench', color: 'text-emerald-400', yields: 1,
-                station: 'Utility Worktable',
-                recipe: { 'antimatter_core': 1, 'diamond': 3, 'compressed_steel': 2 },
-                grid: ['diamond', 'diamond', 'diamond', null, 'antimatter_core', null, null, 'compressed_steel', null],
-                desc: 'Unbreakable 3x3 area mining drill powered by FE.'
+            "machine_frame": {
+                name: "Machine Frame",
+                category: "components",
+                station: "Workbench",
+                energy: 0,
+                grid: [
+                    ["Brute Steel", "Iron Ingot", "Brute Steel"],
+                    ["Iron Ingot", "Glass", "Iron Ingot"],
+                    ["Brute Steel", "Iron Ingot", "Brute Steel"]
+                ],
+                ingredients: {
+                    "Brute Steel": 4,
+                    "Iron Ingot": 4,
+                    "Glass": 1
+                }
+            },
+
+            // Machines & Energy
+            "crusher": {
+                name: "Crusher",
+                category: "machines",
+                station: "Workbench",
+                energy: 250,
+                grid: [
+                    ["Brute Steel", "Furnace", "Brute Steel"],
+                    ["Machine Frame", "Energy Port", "Machine Frame"],
+                    ["Brute Steel", "Wooden Hammer", "Brute Steel"]
+                ],
+                ingredients: {
+                    "Brute Steel": 4,
+                    "Furnace": 1,
+                    "Machine Frame": 2,
+                    "Energy Port": 1,
+                    "Wooden Hammer": 1
+                }
+            },
+            "energy_generator": {
+                name: "Dorios Generator",
+                category: "machines",
+                station: "Workbench",
+                energy: 0,
+                grid: [
+                    ["Brute Steel", "Furnace", "Brute Steel"],
+                    ["Furnace", "Machine Frame", "Furnace"],
+                    ["Brute Steel", "Copper Ingot", "Brute Steel"]
+                ],
+                ingredients: {
+                    "Brute Steel": 4,
+                    "Furnace": 2,
+                    "Machine Frame": 1,
+                    "Copper Ingot": 2
+                }
             }
         };
 
-        let currentTargetId = null;
-        let targetQty = 1;
-        let selectedCategory = 'All';
+        // Application State
+        let currentSelectedKey = null;
+        let currentQuantity = 1;
+        let activeCategory = 'all';
         let searchQuery = '';
-        let checkedMaterials = {}; // Keeps track of checked item IDs in shopping list
 
-        // DOM Element References
-        const categoryContainer = document.getElementById('categoryContainer');
-        const itemGrid = document.getElementById('itemGrid');
-        const searchInput = document.getElementById('searchInput');
-        const clearSearchBtn = document.getElementById('clearSearchBtn');
-        const itemCountBadge = document.getElementById('itemCountBadge');
+        // Startup Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCatalog();
+        });
 
-        const targetIcon = document.getElementById('targetIcon');
-        const targetIconBg = document.getElementById('targetIconBg');
-        const targetName = document.getElementById('targetName');
-        const targetCategory = document.getElementById('targetCategory');
-        const targetTierBadge = document.getElementById('targetTierBadge');
-        const quantityWrapper = document.getElementById('quantityWrapper');
-        const targetQtyInput = document.getElementById('targetQtyInput');
-        const qtyDecBtn = document.getElementById('qtyDecBtn');
-        const qtyIncBtn = document.getElementById('qtyIncBtn');
-        const qty64Btn = document.getElementById('qty64Btn');
-        const resetCalcBtn = document.getElementById('resetCalcBtn');
+        // Render Item Catalog Cards
+        function renderCatalog() {
+            const gridEl = document.getElementById('itemGrid');
+            gridEl.innerHTML = '';
 
-        const tabButtons = document.querySelectorAll('.tab-btn');
-        const tabContentSummary = document.getElementById('tabContentSummary');
-        const tabContentTree = document.getElementById('tabContentTree');
-        const tabContentStations = document.getElementById('tabContentStations');
-
-        const rawMaterialsList = document.getElementById('rawMaterialsList');
-        const treeContainer = document.getElementById('treeContainer');
-        const stationsList = document.getElementById('stationsList');
-
-        const recipeModal = document.getElementById('recipeModal');
-        const modalContent = document.getElementById('modalContent');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const modalSelectBtn = document.getElementById('modalSelectBtn');
-
-        function initApp() {
-            renderCategories();
-            renderItemGrid();
-            setupEventListeners();
-        }
-
-        // Categories list derived from database
-        function renderCategories() {
-            const categories = ['All', 'Base Materials', 'Components', 'Machines', 'Energy & Power', 'Magic & Utilities', 'Tools'];
-            categoryContainer.innerHTML = '';
-
-            categories.forEach(cat => {
-                const isSelected = selectedCategory === cat;
-                const btn = document.createElement('button');
-                btn.className = `px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                    isSelected 
-                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm' 
-                    : 'bg-slate-900/60 hover:bg-slate-800 text-slate-400 border border-slate-800'
-                }`;
-                btn.textContent = cat;
-                btn.addEventListener('click', () => {
-                    selectedCategory = cat;
-                    renderCategories();
-                    renderItemGrid();
-                });
-                categoryContainer.appendChild(btn);
-            });
-        }
-
-        function renderItemGrid() {
-            itemGrid.innerHTML = '';
-            
-            const filtered = Object.entries(ITEMS_DB).filter(([id, item]) => {
-                const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
-                const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                                      item.category.toLowerCase().includes(searchQuery.toLowerCase());
+            const filteredKeys = Object.keys(ITEMS_DB).filter(key => {
+                const item = ITEMS_DB[key];
+                const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
+                const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
                 return matchesCategory && matchesSearch;
             });
 
-            itemCountBadge.textContent = `Showing ${filtered.length} item${filtered.length === 1 ? '' : 's'}`;
-
-            if (filtered.length === 0) {
-                itemGrid.innerHTML = `
-                    <div class="col-span-full py-8 text-center text-slate-500 text-sm">
-                        No items found matching filter.
-                    </div>
-                `;
+            if (filteredKeys.length === 0) {
+                gridEl.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 text-sm">No UtilityCraft items found.</div>`;
                 return;
             }
 
-            filtered.forEach(([id, item]) => {
+            filteredKeys.forEach(key => {
+                const item = ITEMS_DB[key];
                 const card = document.createElement('div');
-                const isSelected = currentTargetId === id;
-                card.className = `glass-card p-3 rounded-xl cursor-pointer flex items-center justify-between gap-3 ${
-                    isSelected ? 'ring-2 ring-cyan-500 bg-cyan-950/20' : ''
-                }`;
+                card.className = `bg-dark border rounded-xl p-3 flex flex-col justify-between cursor-pointer transition hover:border-amber-500/50 hover:bg-slate-800/50 ${currentSelectedKey === key ? 'border-amber-500 bg-amber-500/10' : 'border-slate-800'}`;
+                
+                // Clicking selects item AND opens the 3x3 grid preview modal
+                card.onclick = () => {
+                    selectItem(key);
+                    openRecipeModal();
+                };
 
                 card.innerHTML = `
-                    <div class="flex items-center gap-3 min-w-0">
-                        <div class="w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-lg ${item.color || 'text-slate-300'} shrink-0">
-                            <i class="fa-solid ${item.icon}"></i>
-                        </div>
-                        <div class="min-w-0">
-                            <h4 class="font-bold text-sm text-slate-200 truncate">${item.name}</h4>
-                            <p class="text-[11px] text-slate-400 truncate">${item.category}</p>
-                        </div>
+                    <div>
+                        <span class="text-[10px] uppercase font-semibold text-amber-500 tracking-wider">${item.category}</span>
+                        <h4 class="font-bold text-white text-sm mt-0.5 line-clamp-1">${item.name}</h4>
                     </div>
-                    <div class="flex flex-col items-end gap-1 shrink-0">
-                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-900 text-slate-400 border border-slate-800">
-                            T${item.tier}
-                        </span>
-                        ${!item.isRaw ? `
-                            <button class="modal-trigger text-slate-500 hover:text-cyan-400 text-xs p-1" title="View Crafting Recipe Grid">
-                                <i class="fa-solid fa-circle-info"></i>
-                            </button>
-                        ` : ''}
+                    <div class="mt-3 flex items-center justify-between text-xs text-slate-400">
+                        <span>Station</span>
+                        <span class="text-slate-200 truncate max-w-[100px]">${item.station}</span>
                     </div>
                 `;
-
-                // Click card to select for calculation
-                card.addEventListener('click', (e) => {
-                    if (e.target.closest('.modal-trigger')) {
-                        e.stopPropagation();
-                        openRecipeModal(id);
-                    } else {
-                        selectTargetItem(id);
-                    }
-                });
-
-                itemGrid.appendChild(card);
+                gridEl.appendChild(card);
             });
         }
 
-        function selectTargetItem(itemId) {
-            currentTargetId = itemId;
-            const item = ITEMS_DB[itemId];
-            if (!item) return;
+        // Category Filtering
+        function filterCategory(category) {
+            activeCategory = category;
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            renderCatalog();
+        }
 
-            // Update UI elements
-            targetName.textContent = item.name;
-            targetCategory.textContent = `${item.category} • Tier ${item.tier} ${item.station ? `• Craft at ${item.station}` : ''}`;
-            targetIcon.className = `fa-solid ${item.icon} ${item.color || 'text-cyan-400'}`;
+        // Search Keyword Input Handler
+        function handleSearch(query) {
+            searchQuery = query;
+            renderCatalog();
+        }
+
+        // Select an item from catalog
+        function selectItem(key) {
+            currentSelectedKey = key;
+            renderCatalog();
+            updatePanel();
+        }
+
+        // Adjust Quantities
+        function updateQuantity(val) {
+            currentQuantity = Math.max(1, parseInt(val) || 1);
+            updatePanel();
+        }
+
+        function multiplyQty(multiplier) {
+            currentQuantity = multiplier;
+            document.getElementById('targetQty').value = currentQuantity;
+            updatePanel();
+        }
+
+        // Update Right Panel & Calculate Raw Materials
+        function updatePanel() {
+            if (!currentSelectedKey || !ITEMS_DB[currentSelectedKey]) return;
+
+            const item = ITEMS_DB[currentSelectedKey];
+            document.getElementById('selectedItemName').innerText = `${item.name} ${currentQuantity > 1 ? `(x${currentQuantity})` : ''}`;
             
-            targetTierBadge.classList.remove('hidden');
-            targetTierBadge.textContent = `Tier ${item.tier}`;
-
-            quantityWrapper.classList.remove('opacity-50', 'pointer-events-none');
-
-            // Re-render item grid highlighting
-            renderItemGrid();
-
-            // Perform Calculation Engine
-            calculateAndRender();
-        }
-
-        // Recursive Calculation Logic for Raw Materials & Recipe Tree
-        function calculateAndRender() {
-            if (!currentTargetId) return;
-
-            const rawRequirements = {};
-            const requiredStations = new Set();
-
-            // 1. Recursive function to aggregate raw components
-            function getRawMaterials(itemId, qtyNeeded) {
-                const item = ITEMS_DB[itemId];
-                if (!item) return;
-
-                if (item.station) {
-                    requiredStations.add(item.station);
-                }
-
-                if (item.isRaw || !item.recipe) {
-                    rawRequirements[itemId] = (rawRequirements[itemId] || 0) + qtyNeeded;
-                    return;
-                }
-
-                const yieldPerCraft = item.yields || 1;
-                const craftsNeeded = Math.ceil(qtyNeeded / yieldPerCraft);
-
-                for (const [subId, subQty] of Object.entries(item.recipe)) {
-                    getRawMaterials(subId, subQty * craftsNeeded);
-                }
-            }
-
-            getRawMaterials(currentTargetId, targetQty);
-
-            // Render Output Views
-            renderRawMaterialsList(rawRequirements);
-            renderRecipeTree(currentTargetId, targetQty);
-            renderStationsList(Array.from(requiredStations));
-        }
-
-        function renderRawMaterialsList(rawMap) {
-            rawMaterialsList.innerHTML = '';
-
-            const entries = Object.entries(rawMap);
-            if (entries.length === 0) {
-                rawMaterialsList.innerHTML = `<div class="text-center py-8 text-slate-500 italic text-sm">No raw items required.</div>`;
-                return;
-            }
-
-            entries.forEach(([id, qty]) => {
-                const item = ITEMS_DB[id] || { name: id, icon: 'fa-cube', color: 'text-slate-300' };
-                const isChecked = !!checkedMaterials[id];
-
-                const row = document.createElement('div');
-                row.className = `flex items-center justify-between p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 transition-all ${
-                    isChecked ? 'opacity-50 line-through bg-slate-950/40' : 'hover:border-slate-700'
-                }`;
-
-                const stacks = Math.floor(qty / 64);
-                const remainder = qty % 64;
-                let stackText = '';
-                if (stacks > 0) {
-                    stackText = ` (${stacks}x64${remainder > 0 ? ` + ${remainder}` : ''})`;
-                }
-
-                row.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <input type="checkbox" ${isChecked ? 'checked' : ''} class="w-4 h-4 rounded bg-slate-800 border-slate-700 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-slate-900 cursor-pointer">
-                        <div class="w-8 h-8 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center text-sm ${item.color}">
-                            <i class="fa-solid ${item.icon}"></i>
-                        </div>
-                        <span class="font-semibold text-sm text-slate-200">${item.name}</span>
-                    </div>
-                    <div class="text-right font-mono">
-                        <span class="font-bold text-cyan-400 text-sm">${qty.toLocaleString()}</span>
-                        <span class="text-xs text-slate-500">${stackText}</span>
-                    </div>
-                `;
-
-                // Checkbox interaction
-                const checkbox = row.querySelector('input[type="checkbox"]');
-                checkbox.addEventListener('change', (e) => {
-                    checkedMaterials[id] = e.target.checked;
-                    renderRawMaterialsList(rawMap);
-                });
-
-                rawMaterialsList.appendChild(row);
-            });
-        }
-
-        function renderRecipeTree(itemId, qtyNeeded, depth = 0) {
-            if (depth === 0) treeContainer.innerHTML = '';
-
-            const item = ITEMS_DB[itemId];
-            if (!item) return;
-
-            const yieldPerCraft = item.yields || 1;
-            const craftsNeeded = item.recipe ? Math.ceil(qtyNeeded / yieldPerCraft) : qtyNeeded;
-
-            const treeNode = document.createElement('div');
-            treeNode.className = `${depth > 0 ? 'ml-6 border-l-2 border-slate-800 pl-4 my-1 tree-line-left' : ''}`;
-
-            treeNode.innerHTML = `
-                <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-cyan-500/30 transition-all">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-7 h-7 rounded-md bg-slate-950 flex items-center justify-center text-xs ${item.color || 'text-slate-300'}">
-                            <i class="fa-solid ${item.icon}"></i>
-                        </div>
-                        <div>
-                            <span class="font-semibold text-xs text-slate-200">${item.name}</span>
-                            ${item.station ? `<span class="text-[10px] text-slate-500 ml-2">via ${item.station}</span>` : ''}
-                        </div>
-                    </div>
-                    <div class="font-mono text-xs text-slate-400">
-                        <span class="text-cyan-400 font-bold">${qtyNeeded}x</span>
-                        ${item.recipe ? `<span class="text-[10px] text-slate-500">(${craftsNeeded} craft${craftsNeeded > 1 ? 's' : ''})</span>` : ''}
-                    </div>
-                </div>
+            // Item Metadata Badges
+            const metaEl = document.getElementById('selectedItemMeta');
+            metaEl.innerHTML = `
+                <span class="bg-slate-900 border border-slate-800 px-2.5 py-1 rounded-lg">⚙️ Station: ${item.station}</span>
+                ${item.energy > 0 ? `<span class="bg-amber-500/10 border border-amber-500/20 text-amber-400 px-2.5 py-1 rounded-lg">⚡ ${item.energy * currentQuantity} DE</span>` : ''}
             `;
 
-            if (depth === 0) treeContainer.appendChild(treeNode);
+            // Enable Crafting Grid View Button
+            const viewBtn = document.getElementById('viewRecipeBtn');
+            viewBtn.disabled = false;
+            viewBtn.className = "flex-1 py-2.5 px-4 bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold rounded-xl text-sm flex items-center justify-center gap-2 transition shadow-lg shadow-amber-500/20 cursor-pointer";
 
-            // Recursively add children if item has recipe
-            if (item.recipe) {
-                const childrenContainer = document.createElement('div');
-                for (const [subId, subQty] of Object.entries(item.recipe)) {
-                    const totalSubNeeded = subQty * craftsNeeded;
-                    const childNode = renderRecipeTree(subId, totalSubNeeded, depth + 1);
-                    if (childNode) childrenContainer.appendChild(childNode);
-                }
-                treeNode.appendChild(childrenContainer);
-            }
+            // Aggregate base/raw materials recursively
+            const rawMap = {};
+            aggregateRawMaterials(currentSelectedKey, currentQuantity, rawMap);
 
-            return treeNode;
-        }
+            const listContainer = document.getElementById('shoppingListContainer');
+            listContainer.innerHTML = '';
 
-        function renderStationsList(stations) {
-            stationsList.innerHTML = '';
-
-            if (stations.length === 0) {
-                stationsList.innerHTML = `<div class="col-span-full text-center py-8 text-slate-500 italic text-sm">No special machines required.</div>`;
+            const rawEntries = Object.entries(rawMap);
+            if (rawEntries.length === 0) {
+                listContainer.innerHTML = `<p class="text-slate-400 text-sm italic py-4">This is a base/raw gathering resource!</p>`;
                 return;
             }
 
-            stations.forEach(stationName => {
-                const card = document.createElement('div');
-                card.className = 'glass-card p-3 rounded-xl border border-slate-800 flex items-center gap-3';
-                card.innerHTML = `
-                    <div class="w-10 h-10 rounded-lg bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-                        <i class="fa-solid fa-gears text-lg"></i>
+            rawEntries.forEach(([rawName, qty]) => {
+                const row = document.createElement('label');
+                row.className = "flex items-center justify-between p-2.5 bg-slate-900/60 border border-slate-800/80 rounded-xl cursor-pointer hover:bg-slate-900 transition select-none";
+                row.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" class="w-4 h-4 rounded bg-slate-800 border-slate-700 text-amber-500 focus:ring-0 focus:ring-offset-0 cursor-pointer">
+                        <span class="text-sm font-medium text-slate-200">${rawName}</span>
                     </div>
-                    <div>
-                        <h4 class="font-bold text-xs text-slate-200">${stationName}</h4>
-                        <p class="text-[10px] text-slate-400">Required crafting station</p>
-                    </div>
+                    <span class="text-xs font-bold px-2 py-0.5 bg-amber-500/10 text-amber-400 rounded-md">x${qty}</span>
                 `;
-                stationsList.appendChild(card);
+                listContainer.appendChild(row);
             });
         }
 
-        function openRecipeModal(itemId) {
-            const item = ITEMS_DB[itemId];
-            if (!item) return;
-
-            document.getElementById('modalItemTitle').textContent = item.name;
-            document.getElementById('modalItemCategory').textContent = `${item.category} • Tier ${item.tier}`;
-            document.getElementById('modalItemDesc').textContent = item.desc || 'No description available.';
-            document.getElementById('modalItemIcon').className = `w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-xl ${item.color}`;
-            document.getElementById('modalItemIcon').innerHTML = `<i class="fa-solid ${item.icon}"></i>`;
-            document.getElementById('modalOutputIcon').className = `fa-solid ${item.icon} ${item.color}`;
-            document.getElementById('modalYieldQty').textContent = `x${item.yields || 1}`;
-
-            const powerContainer = document.getElementById('modalPowerContainer');
-            if (item.powerCost || item.station) {
-                powerContainer.classList.remove('hidden');
-                powerContainer.classList.add('grid');
-                document.getElementById('modalPowerCost').textContent = item.powerCost || '0 FE';
-                document.getElementById('modalStation').textContent = item.station || 'Crafting Table';
-            } else {
-                powerContainer.classList.add('hidden');
+        // Recursive material breakdown calculation
+        function aggregateRawMaterials(itemKey, multiplier, rawMap) {
+            const item = ITEMS_DB[itemKey];
+            if (!item || !item.ingredients || Object.keys(item.ingredients).length === 0) {
+                const baseName = item ? item.name : itemKey;
+                rawMap[baseName] = (rawMap[baseName] || 0) + multiplier;
+                return;
             }
 
-            // Populate 3x3 Crafting Grid
-            const gridContainer = document.getElementById('modalCraftingGrid');
-            gridContainer.innerHTML = '';
-
-            const gridData = item.grid || Array(9).fill(null);
-            gridData.forEach((slotItemId) => {
-                const slot = document.createElement('div');
-                slot.className = 'crafting-slot';
-
-                if (slotItemId && ITEMS_DB[slotItemId]) {
-                    const ingredient = ITEMS_DB[slotItemId];
-                    slot.innerHTML = `
-                        <div class="text-lg ${ingredient.color || 'text-slate-200'}" title="${ingredient.name}">
-                            <i class="fa-solid ${ingredient.icon}"></i>
-                        </div>
-                    `;
-                }
-                gridContainer.appendChild(slot);
-            });
-
-            // Set Action Button
-            modalSelectBtn.onclick = () => {
-                selectTargetItem(itemId);
-                closeModal();
-            };
-
-            // Show Modal with Animation
-            recipeModal.classList.remove('opacity-0', 'pointer-events-none');
-            modalContent.classList.remove('scale-95');
-            modalContent.classList.add('scale-100');
-        }
-
-        function closeModal() {
-            recipeModal.classList.add('opacity-0', 'pointer-events-none');
-            modalContent.classList.remove('scale-100');
-            modalContent.classList.add('scale-95');
-        }
-
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMsg').textContent = msg;
-            toast.classList.remove('translate-y-10', 'opacity-0');
-            setTimeout(() => {
-                toast.classList.add('translate-y-10', 'opacity-0');
-            }, 2500);
-        }
-
-        function setupEventListeners() {
-            // Search Input
-            searchInput.addEventListener('input', (e) => {
-                searchQuery = e.target.value;
-                clearSearchBtn.classList.toggle('hidden', searchQuery === '');
-                renderItemGrid();
-            });
-
-            clearSearchBtn.addEventListener('click', () => {
-                searchInput.value = '';
-                searchQuery = '';
-                clearSearchBtn.classList.add('hidden');
-                renderItemGrid();
-            });
-
-            // Quantity Controllers
-            targetQtyInput.addEventListener('input', (e) => {
-                targetQty = Math.max(1, parseInt(e.target.value) || 1);
-                calculateAndRender();
-            });
-
-            qtyDecBtn.addEventListener('click', () => {
-                if (targetQty > 1) {
-                    targetQty--;
-                    targetQtyInput.value = targetQty;
-                    calculateAndRender();
-                }
-            });
-
-            qtyIncBtn.addEventListener('click', () => {
-                targetQty++;
-                targetQtyInput.value = targetQty;
-                calculateAndRender();
-            });
-
-            qty64Btn.addEventListener('click', () => {
-                targetQty = 64;
-                targetQtyInput.value = targetQty;
-                calculateAndRender();
-            });
-
-            // Reset Calculator
-            resetCalcBtn.addEventListener('click', () => {
-                currentTargetId = null;
-                targetQty = 1;
-                targetQtyInput.value = 1;
-                checkedMaterials = {};
+            for (const [ingName, baseCount] of Object.entries(item.ingredients)) {
+                const needed = baseCount * multiplier;
+                const matchingKey = Object.keys(ITEMS_DB).find(k => ITEMS_DB[k].name.toLowerCase() === ingName.toLowerCase());
                 
-                targetName.textContent = 'Select an Item';
-                targetCategory.textContent = 'Click any item from the left catalog to start calculating resources.';
-                targetIcon.className = 'fa-solid fa-cube text-slate-500';
-                targetTierBadge.classList.add('hidden');
-                quantityWrapper.classList.add('opacity-50', 'pointer-events-none');
-
-                rawMaterialsList.innerHTML = `<div class="text-center py-10 text-slate-500 italic text-sm">Select an item to generate crafting materials list.</div>`;
-                treeContainer.innerHTML = `<div class="text-center py-10 text-slate-500 italic text-sm">Select an item to view recipe breakdown.</div>`;
-                stationsList.innerHTML = `<div class="col-span-full text-center py-10 text-slate-500 italic text-sm">Select an item to see workstation requirements.</div>`;
-
-                renderItemGrid();
-                showToast('Calculator reset.');
-            });
-
-            // Tab Switching
-            tabButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const tabKey = btn.getAttribute('data-tab');
-
-                    tabButtons.forEach(b => {
-                        b.classList.remove('text-cyan-400', 'border-b-2', 'border-cyan-400');
-                        b.classList.add('text-slate-400');
-                    });
-
-                    btn.classList.add('text-cyan-400', 'border-b-2', 'border-cyan-400');
-                    btn.classList.remove('text-slate-400');
-
-                    tabContentSummary.classList.toggle('hidden', tabKey !== 'summary');
-                    tabContentTree.classList.toggle('hidden', tabKey !== 'tree');
-                    tabContentStations.classList.toggle('hidden', tabKey !== 'stations');
-                });
-            });
-
-            // Copy Raw Materials to Clipboard
-            document.getElementById('copyListBtn').addEventListener('click', () => {
-                if (!currentTargetId) {
-                    showToast('Please select an item first.');
-                    return;
+                if (matchingKey) {
+                    aggregateRawMaterials(matchingKey, needed, rawMap);
+                } else {
+                    rawMap[ingName] = (rawMap[ingName] || 0) + needed;
                 }
-
-                const targetItem = ITEMS_DB[currentTargetId];
-                let text = `UtilityCraft Crafting List: ${targetQty}x ${targetItem.name}\n${'='.repeat(35)}\n`;
-
-                const rows = rawMaterialsList.querySelectorAll('div.flex');
-                if (rows.length === 0) return;
-
-                rows.forEach(r => {
-                    const name = r.querySelector('span.font-semibold')?.textContent;
-                    const qty = r.querySelector('span.font-bold')?.textContent;
-                    if (name && qty) {
-                        text += `- ${name}: ${qty}\n`;
-                    }
-                });
-
-                // Standard fallback clipboard copy
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-
-                showToast('Shopping list copied to clipboard!');
-            });
-
-            // Clear Checkboxes
-            document.getElementById('clearChecklistBtn').addEventListener('click', () => {
-                checkedMaterials = {};
-                calculateAndRender();
-                showToast('Checklist cleared.');
-            });
-
-            // Modal Close Events
-            closeModalBtn.addEventListener('click', closeModal);
-            recipeModal.addEventListener('click', (e) => {
-                if (e.target === recipeModal) closeModal();
-            });
+            }
         }
 
-        // Initialize App on Window Load
-        window.onload = initApp;
+        // Render and Open 3x3 Crafting Grid Modal
+        function openRecipeModal() {
+            if (!currentSelectedKey || !ITEMS_DB[currentSelectedKey]) return;
+            
+            const item = ITEMS_DB[currentSelectedKey];
+
+            document.getElementById('modalTitle').innerText = `Recipe: ${item.name}`;
+            document.getElementById('modalStationInfo').innerHTML = `
+                <div>Required Station: <strong class="text-white">${item.station}</strong></div>
+                ${item.energy > 0 ? `<div class="text-amber-400 mt-1">Energy Required: ⚡ ${item.energy} DE</div>` : ''}
+            `;
+
+            const gridUI = document.getElementById('craftingGridUI');
+            gridUI.innerHTML = '';
+
+            // Render 3x3 Matrix
+            for (let r = 0; r < 3; r++) {
+                for (let c = 0; c < 3; c++) {
+                    const slotItem = item.grid ? item.grid[r][c] : null;
+                    const slotDiv = document.createElement('div');
+                    
+                    slotDiv.className = "w-16 h-16 bg-slate-900 border border-slate-800 rounded-lg flex items-center justify-center text-[10px] text-center p-1 font-medium text-slate-300 shadow-inner";
+                    
+                    if (slotItem) {
+                        slotDiv.innerHTML = `<span class="text-amber-400 font-semibold leading-tight">${slotItem}</span>`;
+                        slotDiv.classList.add('border-amber-500/30', 'bg-amber-500/10');
+                    } else {
+                        slotDiv.innerHTML = `<span class="text-slate-700">-</span>`;
+                    }
+                    gridUI.appendChild(slotDiv);
+                }
+            }
+
+            // Reveal Modal
+            document.getElementById('recipeModal').classList.remove('hidden');
+        }
+
+        // Close 3x3 Grid Modal
+        function closeRecipeModal() {
+            document.getElementById('recipeModal').classList.add('hidden');
+        }
+
+        // Copy Shopping List Text
+        function copyShoppingList() {
+            const rows = document.querySelectorAll('#shoppingListContainer label');
+            if (rows.length === 0) return;
+
+            let text = "UtilityCraft Raw Shopping List:\n";
+            rows.forEach(row => {
+                const name = row.querySelector('span.text-sm').innerText;
+                const qty = row.querySelector('span.text-xs').innerText;
+                text += `- ${name}: ${qty}\n`;
+            });
+
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Shopping list copied to clipboard!");
+            });
+        }
     </script>
 </body>
 </html>
