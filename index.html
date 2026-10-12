@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UtilityCraft Calculator & Recipe Guide</title>
+    <title>UtilityCraft Calculator & Resource Tree</title>
+    
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -12,48 +13,58 @@
             theme: {
                 extend: {
                     colors: {
-                        darker: '#090d16',
+                        darker: '#0b1120',
                         dark: '#111827',
-                        card: '#1f2937',
-                        accent: '#f59e0b',
-                        accentHover: '#d97706'
+                        card: '#1e293b',
+                        accent: '#38bdf8', /* Cyan / Modern Utility Tech Glow */
+                        accentDark: '#0284c7'
                     }
                 }
             }
         }
     </script>
+    
+    <!-- Lucide Vector Icons Library -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #090d16; }
-        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #374151; }
+        ::-webkit-scrollbar-track { background: #0b1120; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+        
         button.cat-btn.active {
-            background: #f59e0b;
-            color: #090d16;
+            background: #38bdf8;
+            color: #0b1120;
             font-weight: 600;
         }
     </style>
 </head>
-<body class="bg-darker text-slate-100 min-h-screen flex flex-col font-sans selection:bg-amber-500 selection:text-darker">
+<body class="bg-darker text-slate-100 min-h-screen flex flex-col font-sans selection:bg-sky-500 selection:text-darker">
 
     <!-- Header -->
     <header class="border-b border-slate-800 bg-dark/80 backdrop-blur sticky top-0 z-30">
         <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center font-bold text-xl shadow-lg shadow-amber-500/20">
-                    🛠️
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center text-slate-950 shadow-lg shadow-sky-500/20">
+                    <i data-lucide="box" class="w-6 h-6 stroke-[2.5]"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold tracking-tight text-white">UtilityCraft Calculator</h1>
-                    <p class="text-xs text-slate-400">Pebbles, Sieves, Steel, & Dorios Energy (DE) Automation Planner</p>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-xl font-bold tracking-tight text-white">UtilityCraft</h1>
+                        <span class="text-xs font-semibold px-2 py-0.5 bg-sky-500/10 text-sky-400 rounded-md border border-sky-500/20">v2.4</span>
+                    </div>
+                    <p class="text-xs text-slate-400">Minecraft Crafting & Resource Tree Calculator</p>
                 </div>
             </div>
             <div class="flex items-center gap-3 w-full md:w-auto">
-                <div class="relative flex-1 md:w-72">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">🔍</span>
-                    <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="Search items or machines..." class="w-full pl-10 pr-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm focus:outline-none focus:border-amber-500 transition">
+                <div class="relative flex-1 md:w-80">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-500">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                    </span>
+                    <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="Search items, recipes, materials..." class="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm focus:outline-none focus:border-sky-500 transition">
                 </div>
             </div>
         </div>
@@ -62,13 +73,13 @@
     <!-- Main App Layout -->
     <main class="max-w-7xl mx-auto px-4 py-8 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
         
-        <!-- Left Panel: Item Catalog -->
+        <!-- Left Panel: Catalog -->
         <section class="lg:col-span-7 flex flex-col gap-6">
             <div>
-                <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">UtilityCraft Progression Catalog</h2>
+                <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">Item & Machine Catalog</h2>
                 <div class="flex flex-wrap gap-2" id="categoryButtons">
                     <button onclick="filterCategory('all')" class="cat-btn active px-3.5 py-1.5 bg-slate-800 text-slate-200 rounded-lg text-xs font-medium hover:bg-slate-700 transition">All Items</button>
-                    <button onclick="filterCategory('basics')" class="cat-btn px-3.5 py-1.5 bg-slate-800 text-slate-200 rounded-lg text-xs font-medium hover:bg-slate-700 transition">Basics & Gathering</button>
+                    <button onclick="filterCategory('basics')" class="cat-btn px-3.5 py-1.5 bg-slate-800 text-slate-200 rounded-lg text-xs font-medium hover:bg-slate-700 transition">Basics & Ores</button>
                     <button onclick="filterCategory('tools')" class="cat-btn px-3.5 py-1.5 bg-slate-800 text-slate-200 rounded-lg text-xs font-medium hover:bg-slate-700 transition">Tools & Paxels</button>
                     <button onclick="filterCategory('components')" class="cat-btn px-3.5 py-1.5 bg-slate-800 text-slate-200 rounded-lg text-xs font-medium hover:bg-slate-700 transition">Steel & Components</button>
                     <button onclick="filterCategory('machines')" class="cat-btn px-3.5 py-1.5 bg-slate-800 text-slate-200 rounded-lg text-xs font-medium hover:bg-slate-700 transition">Machines & Power</button>
@@ -81,21 +92,29 @@
             </div>
         </section>
 
-        <!-- Right Panel: Calculator & Raw Materials Shopping List -->
+        <!-- Right Panel: Calculator & Shopping List -->
         <section class="lg:col-span-5 flex flex-col gap-6">
             
-            <!-- Active Selection Box -->
-            <div class="bg-dark border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl pointer-events-none"></div>
+            <!-- Target Item Control Card -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-sky-500/5 rounded-full blur-2xl pointer-events-none"></div>
                 <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <span class="text-xs font-semibold text-amber-500 uppercase tracking-widest">Selected Target</span>
-                        <h3 id="selectedItemName" class="text-lg font-bold text-white mt-0.5">Select an item</h3>
+                    <div class="flex items-center gap-3">
+                        <div id="selectedIconContainer" class="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center">
+                            <i data-lucide="layers" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h3 id="selectedItemName" class="text-lg font-bold text-white">Select an item</h3>
+                            <p id="selectedItemSub" class="text-xs text-slate-400">Click any item from catalog to select</p>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <label for="targetQty" class="text-xs text-slate-400">Qty:</label>
-                        <input type="number" id="targetQty" value="1" min="1" max="999" onchange="updateQuantity(this.value)" class="w-16 px-2 py-1 bg-slate-900 border border-slate-800 rounded-lg text-center text-sm font-semibold focus:outline-none focus:border-amber-500">
-                        <button onclick="multiplyQty(64)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg text-amber-400 transition" title="Set to 1 Stack">x64</button>
+                    
+                    <!-- Quantity Stepper Buttons -->
+                    <div class="flex items-center gap-1 bg-slate-950 p-1 border border-slate-800 rounded-xl">
+                        <button onclick="adjustQty(-1)" class="w-7 h-7 hover:bg-slate-800 text-slate-300 rounded-lg text-sm font-bold flex items-center justify-center transition">-</button>
+                        <input type="number" id="targetQty" value="1" min="1" max="999" onchange="updateQuantity(this.value)" class="w-10 bg-transparent text-center text-sm font-semibold focus:outline-none">
+                        <button onclick="adjustQty(1)" class="w-7 h-7 hover:bg-slate-800 text-slate-300 rounded-lg text-sm font-bold flex items-center justify-center transition">+</button>
+                        <button onclick="multiplyQty(64)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-lg text-sky-400 transition ml-1" title="Set to 1 Stack">x64</button>
                     </div>
                 </div>
 
@@ -105,19 +124,22 @@
 
                 <div class="flex gap-2">
                     <button onclick="openRecipeModal()" id="viewRecipeBtn" disabled class="flex-1 py-2.5 px-4 bg-slate-800 text-slate-500 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition cursor-not-allowed">
-                        <span>🧩</span> View 3x3 Crafting Grid
+                        <i data-lucide="grid" class="w-4 h-4"></i> View 3x3 Crafting Grid
                     </button>
                 </div>
             </div>
 
-            <!-- Raw Materials Shopping List -->
-            <div class="bg-dark border border-slate-800 rounded-2xl p-5 shadow-xl flex-1 flex flex-col">
+            <!-- Shopping List Section -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex-1 flex flex-col">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-white text-sm uppercase tracking-wider flex items-center gap-2">
-                        <span>🛒</span> Raw Materials Needed
-                    </h3>
-                    <button onclick="copyShoppingList()" class="text-xs text-amber-400 hover:text-amber-300 transition flex items-center gap-1 font-medium">
-                        📋 Copy List
+                    <div>
+                        <h3 class="font-bold text-white text-sm tracking-wider flex items-center gap-2">
+                            <i data-lucide="list-checks" class="w-4 h-4 text-sky-400"></i> Raw Base Components
+                        </h3>
+                        <p class="text-[11px] text-slate-400">Total uncrafted raw resources needed from scratch</p>
+                    </div>
+                    <button onclick="copyShoppingList()" class="text-xs text-sky-400 hover:text-sky-300 transition flex items-center gap-1 font-medium bg-sky-500/10 px-2.5 py-1 rounded-lg border border-sky-500/20">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Text
                     </button>
                 </div>
 
@@ -131,18 +153,23 @@
 
     <!-- 3x3 Crafting Grid Modal -->
     <div id="recipeModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-dark border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-150">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-150">
             <div class="flex justify-between items-center mb-4">
-                <h3 id="modalTitle" class="text-base font-bold text-white">Crafting Recipe</h3>
+                <div class="flex items-center gap-2">
+                    <div id="modalIconBox" class="text-sky-400">
+                        <i data-lucide="grid" class="w-5 h-5"></i>
+                    </div>
+                    <h3 id="modalTitle" class="text-base font-bold text-white">Crafting Recipe</h3>
+                </div>
                 <button onclick="closeRecipeModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition">✕</button>
             </div>
             
             <div class="flex flex-col items-center gap-4 mb-6">
-                <!-- 3x3 Grid Matrix -->
+                <!-- 3x3 Matrix Grid -->
                 <div id="craftingGridUI" class="grid grid-cols-3 gap-2 p-3 bg-slate-950 rounded-xl border border-slate-800">
-                    <!-- 9 slots populated by JavaScript -->
+                    <!-- 9 slots populated by JS -->
                 </div>
-                <div id="modalStationInfo" class="text-xs text-slate-300 bg-slate-900 px-3.5 py-2 rounded-lg border border-slate-800 text-center font-medium">
+                <div id="modalStationInfo" class="text-xs text-slate-300 bg-slate-950 px-3.5 py-2 rounded-lg border border-slate-800 text-center font-medium">
                     Station: Crafting Table
                 </div>
             </div>
@@ -158,11 +185,12 @@
 
     <!-- Application Script -->
     <script>
-        // UtilityCraft Item & Recipe Database
+        // Database configured with vector icons
         const ITEMS_DB = {
-            // Basics & Early Game
+            // Basics & Ores
             "pebble": {
                 name: "Pebbles (4x)",
+                icon: "mountain",
                 category: "basics",
                 station: "Sneak + Right-Click Dirt/Grass",
                 energy: 0,
@@ -175,6 +203,7 @@
             },
             "cobblestone": {
                 name: "Cobblestone",
+                icon: "blocks",
                 category: "basics",
                 station: "Crafting Table",
                 energy: 0,
@@ -187,20 +216,98 @@
                     "Pebble": 4
                 }
             },
+            "raw_iron": {
+                name: "Raw Iron",
+                icon: "boxes",
+                category: "basics",
+                station: "Mining / Sieving Gravel",
+                energy: 0,
+                grid: [[null, null, null],[null, "Gravel Sieve", null],[null, null, null]],
+                ingredients: {}
+            },
+            "iron_ingot": {
+                name: "Iron Ingot",
+                icon: "box",
+                category: "basics",
+                station: "Furnace",
+                energy: 0,
+                grid: [[null, null, null],[null, "Raw Iron", null],[null, null, null]],
+                ingredients: {
+                    "Raw Iron": 1
+                }
+            },
+            "raw_gold": {
+                name: "Raw Gold",
+                icon: "coins",
+                category: "basics",
+                station: "Mining / Sieving Gravel",
+                energy: 0,
+                grid: [[null, null, null],[null, "Gravel Sieve", null],[null, null, null]],
+                ingredients: {}
+            },
+            "raw_copper": {
+                name: "Raw Copper",
+                icon: "disc",
+                category: "basics",
+                station: "Mining / Sieving Sand",
+                energy: 0,
+                grid: [[null, null, null],[null, "Sand Sieve", null],[null, null, null]],
+                ingredients: {}
+            },
+            "copper_ingot": {
+                name: "Copper Ingot",
+                icon: "disc",
+                category: "basics",
+                station: "Furnace",
+                energy: 0,
+                grid: [[null, null, null],[null, "Raw Copper", null],[null, null, null]],
+                ingredients: {
+                    "Raw Copper": 1
+                }
+            },
+            "coal": {
+                name: "Coal",
+                icon: "flame",
+                category: "basics",
+                station: "Mining / Sieving Gravel",
+                energy: 0,
+                grid: [[null, null, null],[null, "Gravel Sieve", null],[null, null, null]],
+                ingredients: {}
+            },
+            "redstone": {
+                name: "Redstone Dust",
+                icon: "zap",
+                category: "basics",
+                station: "Mining / Sieving Dust",
+                energy: 0,
+                grid: [[null, null, null],[null, "Dust Sieve", null],[null, null, null]],
+                ingredients: {}
+            },
+            "diamond": {
+                name: "Diamond",
+                icon: "gem",
+                category: "basics",
+                station: "Mining / Sieving Gravel",
+                energy: 0,
+                grid: [[null, null, null],[null, "Gravel Sieve", null],[null, null, null]],
+                ingredients: {}
+            },
             "plant_fiber": {
                 name: "Plant Fiber",
+                icon: "sprout",
                 category: "basics",
                 station: "Flint Knife on Leaves",
                 energy: 0,
                 grid: [
                     [null, null, null],
-                    [null, "Leaves", null],
+                    [null, "Oak Leaves", null],
                     [null, null, null]
                 ],
                 ingredients: {}
             },
             "string": {
                 name: "String",
+                icon: "spline",
                 category: "basics",
                 station: "Crafting Table",
                 energy: 0,
@@ -217,6 +324,7 @@
             // Tools
             "flint_knife": {
                 name: "Flint Knife",
+                icon: "sword",
                 category: "tools",
                 station: "Crafting Table",
                 energy: 0,
@@ -232,6 +340,7 @@
             },
             "wooden_hammer": {
                 name: "Wooden Hammer",
+                icon: "hammer",
                 category: "tools",
                 station: "Crafting Table",
                 energy: 0,
@@ -245,27 +354,11 @@
                     "Stick": 2
                 }
             },
-            "wooden_paxel": {
-                name: "Wooden Paxel",
-                category: "tools",
-                station: "Crafting Table",
-                energy: 0,
-                grid: [
-                    ["Wooden Axe", "Wooden Pickaxe", "Wooden Shovel"],
-                    [null, "Stick", null],
-                    [null, "Stick", null]
-                ],
-                ingredients: {
-                    "Wooden Axe": 1,
-                    "Wooden Pickaxe": 1,
-                    "Wooden Shovel": 1,
-                    "Stick": 2
-                }
-            },
 
             // Steel & Components
             "sieve": {
                 name: "Sieve",
+                icon: "filter",
                 category: "components",
                 station: "Crafting Table",
                 energy: 0,
@@ -281,18 +374,16 @@
             },
             "smeltflare": {
                 name: "SmeltFlare",
+                icon: "flame-kindling",
                 category: "components",
-                station: "World Loot / Specialized Furnace",
+                station: "Special Furnace",
                 energy: 0,
-                grid: [
-                    [null, null, null],
-                    [null, "Raw Flare Powder", null],
-                    [null, null, null]
-                ],
+                grid: [[null, null, null],[null, "Flare Powder", null],[null, null, null]],
                 ingredients: {}
             },
             "brute_steel": {
                 name: "Brute Steel",
+                icon: "shield",
                 category: "components",
                 station: "SmeltFlare Furnace",
                 energy: 0,
@@ -309,6 +400,7 @@
             },
             "machine_frame": {
                 name: "Machine Frame",
+                icon: "package",
                 category: "components",
                 station: "Workbench",
                 energy: 0,
@@ -325,10 +417,29 @@
             },
 
             // Machines & Energy
+            "generator": {
+                name: "Generator",
+                icon: "zap",
+                category: "machines",
+                station: "Utility Worktable",
+                energy: 0,
+                grid: [
+                    ["Brute Steel", "Furnace", "Brute Steel"],
+                    ["Furnace", "Machine Frame", "Furnace"],
+                    ["Brute Steel", "Copper Ingot", "Brute Steel"]
+                ],
+                ingredients: {
+                    "Brute Steel": 4,
+                    "Iron Ingot": 10,
+                    "Coal": 4,
+                    "Copper Ingot": 2
+                }
+            },
             "crusher": {
                 name: "Crusher",
+                icon: "cpu",
                 category: "machines",
-                station: "Workbench",
+                station: "Utility Worktable",
                 energy: 250,
                 grid: [
                     ["Brute Steel", "Furnace", "Brute Steel"],
@@ -339,25 +450,7 @@
                     "Brute Steel": 4,
                     "Furnace": 1,
                     "Machine Frame": 2,
-                    "Energy Port": 1,
                     "Wooden Hammer": 1
-                }
-            },
-            "energy_generator": {
-                name: "Dorios Generator",
-                category: "machines",
-                station: "Workbench",
-                energy: 0,
-                grid: [
-                    ["Brute Steel", "Furnace", "Brute Steel"],
-                    ["Furnace", "Machine Frame", "Furnace"],
-                    ["Brute Steel", "Copper Ingot", "Brute Steel"]
-                ],
-                ingredients: {
-                    "Brute Steel": 4,
-                    "Furnace": 2,
-                    "Machine Frame": 1,
-                    "Copper Ingot": 2
                 }
             }
         };
@@ -371,7 +464,17 @@
         // Startup Initialization
         document.addEventListener('DOMContentLoaded', () => {
             renderCatalog();
+            lucide.createIcons();
         });
+
+        // Helper to get vector icon name
+        function getItemIconName(identifier) {
+            if (ITEMS_DB[identifier] && ITEMS_DB[identifier].icon) {
+                return ITEMS_DB[identifier].icon;
+            }
+            const match = Object.values(ITEMS_DB).find(i => i.name.toLowerCase() === identifier.toLowerCase());
+            return match ? match.icon : 'box';
+        }
 
         // Render Item Catalog Cards
         function renderCatalog() {
@@ -393,18 +496,22 @@
             filteredKeys.forEach(key => {
                 const item = ITEMS_DB[key];
                 const card = document.createElement('div');
-                card.className = `bg-dark border rounded-xl p-3 flex flex-col justify-between cursor-pointer transition hover:border-amber-500/50 hover:bg-slate-800/50 ${currentSelectedKey === key ? 'border-amber-500 bg-amber-500/10' : 'border-slate-800'}`;
+                card.className = `bg-slate-900 border rounded-xl p-3 flex flex-col justify-between cursor-pointer transition hover:border-sky-500/50 hover:bg-slate-800/50 ${currentSelectedKey === key ? 'border-sky-500 bg-sky-500/10' : 'border-slate-800'}`;
                 
-                // Clicking selects item AND opens the 3x3 grid preview modal
+                // Clicking selects item (does NOT open grid pop-up)
                 card.onclick = () => {
                     selectItem(key);
-                    openRecipeModal();
                 };
 
                 card.innerHTML = `
-                    <div>
-                        <span class="text-[10px] uppercase font-semibold text-amber-500 tracking-wider">${item.category}</span>
-                        <h4 class="font-bold text-white text-sm mt-0.5 line-clamp-1">${item.name}</h4>
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="${item.icon || 'box'}" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] uppercase font-semibold text-sky-400 tracking-wider">${item.category}</span>
+                            <h4 class="font-bold text-white text-sm line-clamp-1">${item.name}</h4>
+                        </div>
                     </div>
                     <div class="mt-3 flex items-center justify-between text-xs text-slate-400">
                         <span>Station</span>
@@ -413,6 +520,8 @@
                 `;
                 gridEl.appendChild(card);
             });
+
+            lucide.createIcons();
         }
 
         // Category Filtering
@@ -423,20 +532,26 @@
             renderCatalog();
         }
 
-        // Search Keyword Input Handler
+        // Search Input
         function handleSearch(query) {
             searchQuery = query;
             renderCatalog();
         }
 
-        // Select an item from catalog
+        // Select item
         function selectItem(key) {
             currentSelectedKey = key;
             renderCatalog();
             updatePanel();
         }
 
-        // Adjust Quantities
+        // Quantity Stepper controls
+        function adjustQty(delta) {
+            currentQuantity = Math.max(1, currentQuantity + delta);
+            document.getElementById('targetQty').value = currentQuantity;
+            updatePanel();
+        }
+
         function updateQuantity(val) {
             currentQuantity = Math.max(1, parseInt(val) || 1);
             updatePanel();
@@ -453,19 +568,25 @@
             if (!currentSelectedKey || !ITEMS_DB[currentSelectedKey]) return;
 
             const item = ITEMS_DB[currentSelectedKey];
-            document.getElementById('selectedItemName').innerText = `${item.name} ${currentQuantity > 1 ? `(x${currentQuantity})` : ''}`;
+            
+            // Header icon
+            const iconBox = document.getElementById('selectedIconContainer');
+            iconBox.innerHTML = `<i data-lucide="${item.icon || 'box'}" class="w-5 h-5"></i>`;
+
+            document.getElementById('selectedItemName').innerText = item.name;
+            document.getElementById('selectedItemSub').innerText = `${item.category.toUpperCase()} • Craft at ${item.station}`;
             
             // Item Metadata Badges
             const metaEl = document.getElementById('selectedItemMeta');
             metaEl.innerHTML = `
-                <span class="bg-slate-900 border border-slate-800 px-2.5 py-1 rounded-lg">⚙️ Station: ${item.station}</span>
-                ${item.energy > 0 ? `<span class="bg-amber-500/10 border border-amber-500/20 text-amber-400 px-2.5 py-1 rounded-lg">⚡ ${item.energy * currentQuantity} DE</span>` : ''}
+                <span class="bg-slate-950 border border-slate-800 px-2.5 py-1 rounded-lg">⚙️ Craft at: ${item.station}</span>
+                ${item.energy > 0 ? `<span class="bg-sky-500/10 border border-sky-500/20 text-sky-400 px-2.5 py-1 rounded-lg">⚡ ${item.energy * currentQuantity} DE</span>` : ''}
             `;
 
-            // Enable Crafting Grid View Button
+            // Enable Crafting Grid Button
             const viewBtn = document.getElementById('viewRecipeBtn');
             viewBtn.disabled = false;
-            viewBtn.className = "flex-1 py-2.5 px-4 bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold rounded-xl text-sm flex items-center justify-center gap-2 transition shadow-lg shadow-amber-500/20 cursor-pointer";
+            viewBtn.className = "flex-1 py-2.5 px-4 bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold rounded-xl text-sm flex items-center justify-center gap-2 transition shadow-lg shadow-sky-500/20 cursor-pointer";
 
             // Aggregate base/raw materials recursively
             const rawMap = {};
@@ -481,17 +602,37 @@
             }
 
             rawEntries.forEach(([rawName, qty]) => {
+                const iconName = getItemIconName(rawName);
+
                 const row = document.createElement('label');
-                row.className = "flex items-center justify-between p-2.5 bg-slate-900/60 border border-slate-800/80 rounded-xl cursor-pointer hover:bg-slate-900 transition select-none";
+                row.className = "flex items-center justify-between p-3 bg-slate-950/80 border border-slate-800/80 rounded-xl cursor-pointer hover:bg-slate-800/40 transition select-none group";
+                
                 row.innerHTML = `
                     <div class="flex items-center gap-3">
-                        <input type="checkbox" class="w-4 h-4 rounded bg-slate-800 border-slate-700 text-amber-500 focus:ring-0 focus:ring-offset-0 cursor-pointer">
-                        <span class="text-sm font-medium text-slate-200">${rawName}</span>
+                        <input type="checkbox" onchange="toggleItemCheck(this)" class="w-4 h-4 rounded bg-slate-900 border-slate-700 text-sky-500 focus:ring-0 focus:ring-offset-0 cursor-pointer">
+                        <div class="w-7 h-7 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center">
+                            <i data-lucide="${iconName}" class="w-4 h-4"></i>
+                        </div>
+                        <span class="item-text text-sm font-semibold text-slate-200 transition">${rawName}</span>
                     </div>
-                    <span class="text-xs font-bold px-2 py-0.5 bg-amber-500/10 text-amber-400 rounded-md">x${qty}</span>
+                    <span class="text-xs font-bold text-sky-400 bg-sky-500/10 px-2.5 py-1 rounded-lg border border-sky-500/20">${qty}</span>
                 `;
                 listContainer.appendChild(row);
             });
+
+            lucide.createIcons();
+        }
+
+        // Checkbox strikethrough logic
+        function toggleItemCheck(checkbox) {
+            const labelText = checkbox.closest('label').querySelector('.item-text');
+            if (checkbox.checked) {
+                labelText.classList.add('line-through', 'text-slate-500');
+                labelText.classList.remove('text-slate-200');
+            } else {
+                labelText.classList.remove('line-through', 'text-slate-500');
+                labelText.classList.add('text-slate-200');
+            }
         }
 
         // Recursive material breakdown calculation
@@ -522,25 +663,31 @@
             const item = ITEMS_DB[currentSelectedKey];
 
             document.getElementById('modalTitle').innerText = `Recipe: ${item.name}`;
+            document.getElementById('modalIconBox').innerHTML = `<i data-lucide="${item.icon || 'box'}" class="w-5 h-5"></i>`;
+
             document.getElementById('modalStationInfo').innerHTML = `
                 <div>Required Station: <strong class="text-white">${item.station}</strong></div>
-                ${item.energy > 0 ? `<div class="text-amber-400 mt-1">Energy Required: ⚡ ${item.energy} DE</div>` : ''}
+                ${item.energy > 0 ? `<div class="text-sky-400 mt-1">Energy Required: ⚡ ${item.energy} DE</div>` : ''}
             `;
 
             const gridUI = document.getElementById('craftingGridUI');
             gridUI.innerHTML = '';
 
-            // Render 3x3 Matrix
+            // Render 3x3 Grid
             for (let r = 0; r < 3; r++) {
                 for (let c = 0; c < 3; c++) {
                     const slotItem = item.grid ? item.grid[r][c] : null;
                     const slotDiv = document.createElement('div');
                     
-                    slotDiv.className = "w-16 h-16 bg-slate-900 border border-slate-800 rounded-lg flex items-center justify-center text-[10px] text-center p-1 font-medium text-slate-300 shadow-inner";
+                    slotDiv.className = "w-16 h-16 bg-slate-900 border border-slate-800 rounded-lg flex flex-col items-center justify-center text-[10px] text-center p-1 font-medium text-slate-300 shadow-inner";
                     
                     if (slotItem) {
-                        slotDiv.innerHTML = `<span class="text-amber-400 font-semibold leading-tight">${slotItem}</span>`;
-                        slotDiv.classList.add('border-amber-500/30', 'bg-amber-500/10');
+                        const iconName = getItemIconName(slotItem);
+                        slotDiv.innerHTML = `
+                            <i data-lucide="${iconName}" class="w-4 h-4 text-sky-400 mb-1"></i>
+                            <span class="text-sky-400 font-semibold leading-tight truncate w-full">${slotItem}</span>
+                        `;
+                        slotDiv.classList.add('border-sky-500/30', 'bg-sky-500/10');
                     } else {
                         slotDiv.innerHTML = `<span class="text-slate-700">-</span>`;
                     }
@@ -548,11 +695,11 @@
                 }
             }
 
-            // Reveal Modal
             document.getElementById('recipeModal').classList.remove('hidden');
+            lucide.createIcons();
         }
 
-        // Close 3x3 Grid Modal
+        // Close Modal
         function closeRecipeModal() {
             document.getElementById('recipeModal').classList.add('hidden');
         }
@@ -564,7 +711,7 @@
 
             let text = "UtilityCraft Raw Shopping List:\n";
             rows.forEach(row => {
-                const name = row.querySelector('span.text-sm').innerText;
+                const name = row.querySelector('span.item-text').innerText;
                 const qty = row.querySelector('span.text-xs').innerText;
                 text += `- ${name}: ${qty}\n`;
             });
